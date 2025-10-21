@@ -1,0 +1,104 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Aurora Sky Grill & Cafe",
+        "desc": "Cafe rooftop dengan pemandangan kota Sukabumi yang menawan, cocok untuk menikmati sore hari.",
+        "image": "assets/aurora.jpg",
+        "rating": 5,
+        "jam_buka": "14.00 - 22.00",
+        "alamat": "Jl. Bhayangkara No.46, Gunungpuyuh, Kec. Gunungpuyuh, Kota Sukabumi, Jawa Barat 43123",
+        "kontak": "0811-208-923",
+        "instagram": "auroraskygrillcafe"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.91801587011156,
+          -6.9162965996020915
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Habit Coffee",
+        "desc": "Tempat ngopi kekinian dengan area outdoor yang luas dan nyaman untuk nongkrong atau kerja.",
+        "image": "assets/habit.jpg",
+        "rating": 4.7,
+        "jam_buka": "09.00 - 22.00",
+        "alamat": "Jl. Bhayangkara No.91, Selabatu, Kec. Gunungpuyuh, Kabupaten Sukabumi, Jawa Barat 43123",
+        "kontak": "0877-1212-1996",
+        "instagram": "habit.smi"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.91991043241666,
+          -6.914284588170702
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Ngopi di Kebon Awi Sukabumi",
+        "desc": "Cafe bernuansa alam dengan udara segar dan banyak spot foto menarik.",
+        "image": "assets/kebon.jpg",
+        "rating": 4.8,
+        "jam_buka": "11.00 - 22.00",
+        "alamat": "Karang Tengah, Kec. Gunungpuyuh, Kota Sukabumi, Jawa Barat",
+        "instagram": "ngopidikebon"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.90890151929744,
+          -6.913260092427109
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Cafe Van Mila",
+        "desc": "Cafe dengan desain interior estetik dan menu kopi premium khas Sukabumi.",
+        "image": "assets/vanmila.jpg",
+        "rating": 4.6,
+        "jam_buka": "08.00 - 22.00",
+        "alamat": " Jl. Raya Cemerlang, Sukakarya, Kec. Warudoyong, Kota Sukabumi, Jawa Barat 43135",
+        "kontak": " 0897-3045-588",
+        "instagram": "cafevanmila"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.90398730899676,
+          -6.916880566491216
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "nama": "Seecul Coffee Bar",
+        "desc": "Coffee bar modern dengan nuansa elegan dan menu signature coffee unik.",
+        "image": "assets/seecul.jpg",
+        "rating": 4.6,
+        "jam_buka": "07.00 - 23.00",
+        "alamat": "Jl. Perintis Kemerdekaan No.2, Gunungparang, Kec. Cikole, Kota Sukabumi, Jawa Barat 43111",
+        "kontak": "0812-1209-0409",
+        "instagram": "seecul"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.92745831047893,
+          -6.920246049722223
+        ]
+      }
+    }
+  ]
+}

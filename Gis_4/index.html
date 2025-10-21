@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peta Cafe Kota Sukabumi</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+
+    h2 {
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    #map {
+      height: 700px;
+      width: 100%;
+      border-top: 2px solid #ccc;
+    }
+
+    /* === Kotak pencarian === */
+    #search-box {
+      position: absolute;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      padding: 6px 10px;
+      width: 250px;
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    #search-box input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 14px;
+    }
+
+    #search-box button {
+      border: none;
+      background: #007bff;
+      color: white;
+      border-radius: 6px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    #search-box button:hover {
+      background: #0056b3;
+    }
+
+    .leaflet-tooltip {
+      background: #333;
+      color: #fff;
+      font-size: 12px;
+      border-radius: 4px;
+      padding: 3px 6px;
+    }
+
+    .popup-content {
+      text-align: center;
+      width: 230px;
+    }
+
+    .popup-content img {
+      width: 100%;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 6px;
+    }
+
+    .popup-content h4 {
+      margin: 5px 0;
+      font-size: 15px;
+    }
+
+    .popup-content p {
+      margin: 2px 0 6px;
+      font-size: 13px;
+      color: #444;
+    }
+
+    .popup-content a {
+      color: #1e90ff;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .popup-content a:hover {
+      text-decoration: underline;
+    }
+
+    .rating {
+      color: #FFD700;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Peta Cafe Kota Sukabumi</h2>
+
+  <!-- 🔍 Kotak pencarian -->
+  <div id="search-box">
+    <input type="text" id="search-input" placeholder="Cari nama cafe...">
+    <button id="search-btn">Cari</button>
+  </div>
+
+  <div id="map"></div>
+
+  <script>
+    // === Inisialisasi Peta ===
+    var map = L.map('map').setView([-6.918, 106.92], 13);
+
+    // === Layer Dasar ===
+    var osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/' +
+      'World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      attribution: 'Tiles © Esri'
+    });
+
+    // === Ikon Custom ===
+    var customIcon = L.icon({
+      iconUrl: 'assets/coffee.png',
+      iconSize: [38, 38],
+      iconAnchor: [19, 38],
+      popupAnchor: [0, -35]
+    });
+
+    // === Layer Group ===
+    var markerLayer = L.layerGroup();
+    var polylineLayer = L.layerGroup();
+    var polygonLayer = L.layerGroup();
+
+    // === Fungsi Membuat Popup Interaktif ===
+    function createPopupHTML(props) {
+      // buat bintang rating
+      let stars = "";
+      if (props.rating) {
+        const rounded = Math.round(props.rating);
+        stars = "⭐".repeat(rounded) + ` (${props.rating}/5)`;
+      }
+
+      return `
+        <div class="popup-content">
+          ${props.image ? `<img src="${props.image}" alt="${props.nama}">` : ""}
+          <h4>${props.nama || "Tanpa Nama"}</h4>
+          ${props.rating ? `<p class="rating">${stars}</p>` : ""}
+          ${props.desc ? `<p>${props.desc}</p>` : ""}
+          ${props.jam_buka ? `<p><b>🕒 Jam Buka:</b> ${props.jam_buka}</p>` : ""}
+          ${props.alamat ? `<p><b>📍 Alamat:</b> ${props.alamat}</p>` : ""}
+          ${props.kontak ? `<p><b>📞 Kontak:</b> ${props.kontak}</p>` : ""}
+          ${props.instagram ? `<p><a href="https://instagram.com/${props.instagram}" target="_blank">📸 @${props.instagram}</a></p>` : ""}
+        </div>
+      `;
+    }
+
+    var allMarkers = [];
+
+    // === Fungsi Interaksi Feature ===
+    function onEachFeature(feature, layer) {
+      if (feature.properties && feature.properties.nama) {
+        layer.bindTooltip(feature.properties.nama, { permanent: false, direction: "top" });
+        layer.bindPopup(createPopupHTML(feature.properties));
+
+        layer.on("mouseover", function () {
+          if (layer.setOpacity) layer.setOpacity(0.7);
+          else layer.setStyle({ weight: 4 });
+        });
+
+        layer.on("mouseout", function () {
+          if (layer.setOpacity) layer.setOpacity(1);
+          else layer.setStyle({ weight: 2 });
+        });
+
+        allMarkers.push({
+          name: feature.properties.nama.toLowerCase(),
+          marker: layer
+        });
+      }
+    }
+
+    // === Ambil Marker GeoJSON ===
+    fetch('marker.geojson')
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, { icon: customIcon });
+          },
+          onEachFeature: onEachFeature
+        }).addTo(markerLayer);
+      });
+
+    // === Ambil Polyline GeoJSON ===
+    fetch('polyline.geojson')
+      .then(res => res.json())
+      .then(data => {
+        L.geoJSON(data, {
+          style: { color: 'red', weight: 3 },
+          onEachFeature: onEachFeature
+        }).addTo(polylineLayer);
+      });
+
+    // === Ambil Polygon GeoJSON ===
+    fetch('polygon.geojson')
+      .then(res => res.json())
+      .then(data => {
+        var polyLayer = L.geoJSON(data, {
+          style: {
+            color: 'blue',
+            weight: 2,
+            fillColor: '#3388ff',
+            fillOpacity: 0.35
+          },
+          onEachFeature: onEachFeature
+        }).addTo(polygonLayer);
+        map.fitBounds(polyLayer.getBounds());
+      });
+
+    // === Control Layer ===
+    var baseMaps = {
+      "🗺️ OpenStreetMap": osm,
+      "🌍 Satelit": satellite
+    };
+
+    var overlayMaps = {
+      "☕ Marker Cafe": markerLayer,
+      "🚗 Polyline": polylineLayer,
+      "🏙️ Polygon Area": polygonLayer
+    };
+
+    L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+    // === Fitur Pencarian ===
+    document.getElementById("search-btn").addEventListener("click", function () {
+      var query = document.getElementById("search-input").value.toLowerCase().trim();
+
+      if (!query) return alert("Masukkan nama cafe yang ingin dicari!");
+
+      var found = allMarkers.find(m => m.name.includes(query));
+
+      if (found) {
+        map.setView(found.marker.getLatLng(), 17);
+        found.marker.openPopup();
+      } else {
+        alert("Cafe tidak ditemukan di peta.");
+      }
+    });
+  </script>
+</body>
+</html>
